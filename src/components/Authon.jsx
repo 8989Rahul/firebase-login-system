@@ -72,6 +72,25 @@ export default class Authon extends Component {
 
   google = () => {
     console.log("hello from google");
+
+    firebase
+      .auth()
+      .signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .then(result => {
+        var user = result.user;
+        console.log(result);
+        firebase
+          .database()
+          .ref("users/" + user.uid)
+          .set({
+            email: user.email,
+            name: user.displayName
+          });
+      })
+      .catch(e => {
+        var msg = e.message;
+        console.log(msg);
+      });
   };
   render() {
     return (
