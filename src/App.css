@@ -56,3 +56,12 @@ p {
 .hide {
   display: none;
 }
+
+.google {
+  font-size: 30px;
+  background-color: red;
+  color: #fff;
+  padding: 10px 30px;
+  margin: 20px 20px 0 20px;
+  cursor: pointer;
+}
