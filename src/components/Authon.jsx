@@ -1,22 +1,77 @@
 import React, { Component } from "react";
 var firebase = require("firebase");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBSbRrVuQfugFAeFjebieQM1FmAL1nue1k",
-  authDomain: "fir-login-171f0.firebaseapp.com",
-  databaseURL: "https://fir-login-171f0.firebaseio.com",
-  projectId: "fir-login-171f0",
-  storageBucket: "fir-login-171f0.appspot.com",
-  messagingSenderId: "695855483615",
-  appId: "1:695855483615:web:c15302bac30033cb"
+var firebaseConfig = {
+  apiKey: "AIzaSyCy9rAkF5FLi_SaBtnrfqfUiXP2WRkjbBE",
+  authDomain: "usurvey-b080b.firebaseapp.com",
+  databaseURL: "https://usurvey-b080b.firebaseio.com",
+  projectId: "usurvey-b080b",
+  storageBucket: "usurvey-b080b.appspot.com",
+  messagingSenderId: "386625177926",
+  appId: "1:386625177926:web:26db0eb34a730a16"
 };
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
 export default class Authon extends Component {
+  state = {
+    err: ""
+  };
+
   login = event => {
-    var email = this.refs.email.value;
-    var pass = this.refs.password.value;
+    const email = this.refs.email.value;
+    const pass = this.refs.password.value;
     console.log(email, pass);
+
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, pass)
+      .catch(error => {
+        // Handle Errors here.
+        var errorMessage = error.message;
+        console.log(errorMessage, this.state);
+
+        this.setState({
+          err: errorMessage
+        });
+      });
+  };
+
+  signUp = () => {
+    const email = this.refs.email.value;
+    const pass = this.refs.password.value;
+    console.log(email, pass);
+
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, pass)
+      .then(data => {
+        var err = "Welcome " + data.user.email;
+        console.log(data);
+        firebase
+          .database()
+          .ref("users/" + data.user.uid)
+          .set({
+            email: data.user.email
+          });
+
+        this.setState({ err: err });
+      })
+      .catch(error => {
+        // Handle Errors here.
+        var err = error.message;
+        this.setState({ err: err });
+      });
+  };
+
+  logOut = () => {
+    firebase.auth().signOut();
+    var lout = document.getElementById("logout");
+    lout.classList.add("hide");
+  };
+
+  google = () => {
+    console.log("hello from google");
   };
   render() {
     return (
@@ -35,8 +90,16 @@ export default class Authon extends Component {
           placeholder="Enter your password"
         />
         <br />
+        <p>{this.state.err}</p>
         <button onClick={this.login}>Login</button>
-        <button>Sign In</button>
+        <button onClick={this.signUp}>Sign In</button>
+        <button id="logout" className="hide" onClick={this.logOut}>
+          Log Out
+        </button>
+        <br />
+        <button id="google" className="google" onClick={this.google}>
+          Sign In With Google
+        </button>
       </div>
     );
   }
